@@ -1,8 +1,7 @@
 {
-  "name": "FSAE Autonomous Environment",
-  "remoteUser": "dev",
+  "name": "MASLAB Group 6",
   "build": {
-      "dockerfile": "Containerfile",
+      "dockerfile": "Containerfile"
   },
   "customizations": {
       "vscode": {
