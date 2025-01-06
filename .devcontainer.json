@@ -1,0 +1,39 @@
+{
+  "name": "FSAE Autonomous Environment",
+  "remoteUser": "dev",
+  "build": {
+      "dockerfile": "Containerfile",
+  },
+  "customizations": {
+      "vscode": {
+          "extensions": [
+              "ms-python.python",
+              "charliermarsh.ruff",
+              "ms-vscode.cpptools-extension-pack",
+              "ms-iot.vscode-ros",
+              "smilerobotics.urdf",
+              "redhat.vscode-xml",
+              "tamasfe.even-better-toml",
+              "timonwong.shellcheck",
+              "yzhang.markdown-all-in-one",
+          ],
+          "settings": {
+              "files.associations": {
+                  "*.rviz": "yaml",
+                  "*.srdf": "xml",
+                  "*.urdf": "xml",
+                  "*.xacro": "xml"
+              }
+          }
+      }
+  },
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+  "mounts": [],
+  "runArgs": [
+      "--net=host"
+  ],
+  "containerEnv": {
+      "SHELL": "/bin/bash"
+  }
+}
