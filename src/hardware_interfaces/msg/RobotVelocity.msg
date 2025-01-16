@@ -1,0 +1,2 @@
+float32 translational_velocity
+float32 rotational_velocity

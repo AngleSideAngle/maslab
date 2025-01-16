@@ -1,0 +1,8 @@
+[package]
+name = "maslab_hardware"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+r2r = "0.9.4"
+serialport = "4.6.1"
