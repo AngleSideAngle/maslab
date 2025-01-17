@@ -3,6 +3,7 @@ from icm42688.icm42688 import busio
 import rclpy
 from rclpy.node import Node
 
+from std_msgs.msg import Float32
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Vector3
 from hardware_interfaces.msg import RobotVelocity, PID
@@ -34,18 +35,18 @@ def sequence_to_vector3(sequence: Sequence) -> Vector3:
 
 class Hardware(Node):
 
-    left_wheel = Raven.MotorChannel.CH1
-    right_wheel = Raven.MotorChannel.CH2
+    left_wheel = Raven.MotorChannel.CH2
+    right_wheel = Raven.MotorChannel.CH1
 
     def __init__(self):
         super().__init__("maslab_hardware")
 
         # set up node parameters
-        self.track_width_param = self.declare_parameter("track_width", 0)
-        self.wheel_radius_param = self.declare_parameter("wheel_radius", 0)
-        self.p_param = self.declare_parameter("p_gain", 0)
-        self.i_param = self.declare_parameter("i_gain", 0)
-        self.d_param = self.declare_parameter("d_gain", 0)
+        self.track_width_param = self.declare_parameter("track_width", 0.0)
+        self.wheel_radius_param = self.declare_parameter("wheel_radius", 0.0)
+        self.p_param = self.declare_parameter("p_gain", 0.0)
+        self.i_param = self.declare_parameter("i_gain", 0.0)
+        self.d_param = self.declare_parameter("d_gain", 0.0)
 
         self.p_value = 0
         self.i_value = 0
@@ -89,8 +90,8 @@ class Hardware(Node):
         self.imu_rot_pub = self.create_publisher(Vector3, "angular_velocity", 10)
 
         # publish encoder data
-        self.right_distance_pub = self.create_publisher(float, "right_distance", 10)
-        self.left_distance_pub = self.create_publisher(float, "left_distance", 10)
+        self.right_distance_pub = self.create_publisher(Float32, "right_distance", 10)
+        self.left_distance_pub = self.create_publisher(Float32, "left_distance", 10)
 
         self.sensor_timer = self.create_timer(
             timer_period_sec=0.02, callback=self.update_sensor_callback
@@ -124,8 +125,15 @@ class Hardware(Node):
         left_distance = self.controller.get_motor_encoder(self.left_wheel, 5)
         right_distance = self.controller.get_motor_encoder(self.right_wheel, 5)
 
-        self.left_distance_pub.publish(left_distance)
-        self.right_distance_pub.publish(right_distance)
+        if left_distance is not None:
+            self.left_distance_pub.publish(Float32(data=float(left_distance)))
+        else:
+            self.get_logger().error("could not get left motor distance")
+
+        if right_distance is not None:
+            self.right_distance_pub.publish(Float32(data=float(right_distance)))
+        else:
+            self.get_logger().error("could not get right motor distance")
 
     def slow_callback(self) -> None:
         self.track_width = self.track_width_param.get_parameter_value().double_value

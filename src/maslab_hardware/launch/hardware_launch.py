@@ -8,7 +8,7 @@ def generate_launch_description():
         executable="maslab_robot",
         name="robot",
         emulate_tty=True,
-        parameters=[{"p_gain", "int(1)"}],
+        # parameters=[{"p_gain", "int(1)"}],
     )
 
     return LaunchDescription([hardware_node])

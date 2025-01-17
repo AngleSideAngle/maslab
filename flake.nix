@@ -82,11 +82,19 @@
                   std-msgs
                   rosidl-generator-py
                   rosidl-core-generators
+                  rqt
+                  rqt-topic
+                  rqt-robot-monitor
+                  rqt-console
+                  rqt-image-view
+                  rviz2
                 ];
               })
             ];
 
           buildInputs = [maslab-lib];
+
+          ROS_DOMAIN_ID = 6;
 
           # bindgen needs to find libclang
           LIBCLANG_PATH = "${pkgs.llvmPackages.libclang.lib}/lib";
