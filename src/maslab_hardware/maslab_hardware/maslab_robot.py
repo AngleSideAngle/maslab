@@ -3,7 +3,7 @@ from icm42688.icm42688 import busio
 import rclpy
 from rclpy.node import Node
 
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Bool
 from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Vector3
 from hardware_interfaces.msg import RobotVelocity, PID
@@ -38,6 +38,8 @@ class Hardware(Node):
     left_wheel = Raven.MotorChannel.CH2
     right_wheel = Raven.MotorChannel.CH1
 
+    in_servo = Raven.ServoChannel.CH1
+
     def __init__(self):
         super().__init__("maslab_hardware")
 
@@ -56,6 +58,10 @@ class Hardware(Node):
 
         # start from scratch
         self.controller.reset()
+
+        # set intake servo to the left side
+        #assuming 0 means we are the red side
+        self.controller.set_servo_position(self.in_servo, 0)
 
         # configure motor control
 
@@ -85,6 +91,15 @@ class Hardware(Node):
             RobotVelocity, "drive_twist", self.drive_callback, 10
         )
 
+        #We would then need a system to call this when
+        #the blocks are being approached 
+        #the blocks are in the middle
+        #not sure when we'd know the blocks are in the middle
+        self.servo_turn = self.create_subscription(
+            Bool, "servo_rot", self.move_servo_to, 10
+        )
+
+
         # publish imu data
         self.imu_trn_pub = self.create_publisher(Vector3, "linear_accel", 10)
         self.imu_rot_pub = self.create_publisher(Vector3, "angular_velocity", 10)
@@ -99,6 +114,17 @@ class Hardware(Node):
         self.slow_timer = self.create_timer(
             timer_period_sec=0.5, callback=self.slow_callback
         )
+
+    #msg = False, move to red
+    #msg = True, move to green
+    def move_servo_to(self, msg: Bool) -> None:
+        if msg is False:
+            self.controller.set_servo_position(self.in_servo, 0)
+
+        if msg is True:
+            self.controller.set_servo_position(self.in_servo, 180)
+        
+        
 
     def drive_callback(self, msg: RobotVelocity) -> None:
         left_vel, right_vel = diff_drive_ik(
