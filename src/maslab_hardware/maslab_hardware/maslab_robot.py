@@ -4,9 +4,8 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import Float32
-from sensor_msgs.msg import Imu
 from geometry_msgs.msg import Vector3
-from hardware_interfaces.msg import RobotVelocity, PID
+from hardware_interfaces.msg import RobotVelocity
 
 
 from raven import Raven
@@ -107,6 +106,8 @@ class Hardware(Node):
             msg.translational_velocity,
             msg.rotational_velocity,
         )
+
+        self.get_logger().info(f"commanded left: {left_vel}, {right_vel}")
 
         left_success = self.controller.set_motor_target(self.left_wheel, left_vel, 5)
         right_success = self.controller.set_motor_target(self.right_wheel, right_vel, 5)
