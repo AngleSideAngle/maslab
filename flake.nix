@@ -2,17 +2,21 @@
   description = "Group 6 MASLAB";
   
   inputs = {
-    nix-ros-overlay.url = "github:lopsided98/nix-ros-overlay/master";
+    rospkgs.url = "github:lopsided98/nix-ros-overlay/master";
     # nixpkgs.follows = "nix-ros-overlay/nixpkgs";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
   };
 
-  outputs = { self, nix-ros-overlay, nixpkgs }:
-    nix-ros-overlay.inputs.flake-utils.lib.eachDefaultSystem (system:
+  outputs = { self, rospkgs, nixpkgs }:
+    rospkgs.inputs.flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ nix-ros-overlay.overlays.default ];
+          overlays = [ rospkgs.overlays.default ];
+        };
+        ros = import rospkgs {
+          inherit system;
+          
         };
 
         adafruit-blinka = with pkgs.python3Packages; buildPythonPackage rec {
@@ -31,7 +35,7 @@
         maslab-lib-src = fetchGit {
           url = "https://github.com/MASLAB/maslab-lib";
           ref = "main";
-          rev = "6788cd2f1fcba8b5dc430cde1abeae300d4caa49";
+          rev = "1ef6d3d622b486aa20a3329526aee8b03e7714e1";
         };
 
         maslab-lib = pkgs.python3Packages.buildPythonPackage {
@@ -53,7 +57,7 @@
       in {
         devShells.default = pkgs.mkShell {
           packages =
-            with pkgs; [
+            with pkgs; with ros.rosPackages.jazzy; [
               colcon
               # ament-cmake-python
 
@@ -62,15 +66,18 @@
               rustfmt
               rust-analyzer
               rustPackages.clippy
-              python312Packages.setuptools
+              python3Packages.setuptools
               # for python hardware package
-              python314
+              python3
+              python3Packages.opencv4
               pyright
               black
               # for rust hardware package
               clang
               llvmPackages.libclang
               udev
+
+
               (with rosPackages.jazzy; buildEnv {
                 paths = [
                   ros-core
@@ -80,8 +87,13 @@
                   python-cmake-module
                   pkg-config
                   std-msgs
+                  sensor-msgs
                   rosidl-generator-py
                   rosidl-core-generators
+                  # deps
+                  v4l2-camera
+                  cv-bridge
+                  # tools
                   rqt
                   rqt-topic
                   rqt-robot-monitor

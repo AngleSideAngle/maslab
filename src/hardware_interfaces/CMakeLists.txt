@@ -12,7 +12,8 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/RobotVelocity.msg"
-  "msg/PID.msg"
+  "msg/DetectedCube.msg"
+  DEPENDENCIES geometry_msgs
 )
 
 if(BUILD_TESTING)

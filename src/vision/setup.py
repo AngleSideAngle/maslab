@@ -3,7 +3,7 @@ from glob import glob
 
 from setuptools import find_packages, setup
 
-package_name = "planning"
+package_name = "vision"
 
 setup(
     name=package_name,
@@ -25,6 +25,6 @@ setup(
     license="MIT",
     # tests_require=['pytest'],
     entry_points={
-        "console_scripts": ["planning = planning.planning:main"],
+        "console_scripts": ["cube_detect = vision.cube_detect:main"],
     },
 )

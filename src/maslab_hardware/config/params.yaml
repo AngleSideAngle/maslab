@@ -2,6 +2,7 @@ robot:
   ros__parameters:
     track_width: 0.2802128
     wheel_radius: 0.05
-    p_gain: 10.0
+    p_gain: 3.0
     i_gain: 0.0
     d_gain: 0.0
+    cpr: 640.0
